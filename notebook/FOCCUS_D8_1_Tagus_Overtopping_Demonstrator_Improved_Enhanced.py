@@ -13,13 +13,6 @@
 #     name: foccus-demonstrator
 # ---
 
-# %% [markdown] tags=["branding"]
-# <style>
-# .jp-CodeCell .jp-Cell-inputWrapper {display:none !important;}
-# .jp-CodeCell.jp-mod-selected .jp-Cell-inputWrapper {display:none !important;}
-# div.input, div.prompt.input_prompt {display:none !important;}
-# </style>
-
 # %% [markdown] tags=["overview"]
 # <div style="display:flex;gap:18px;align-items:stretch;margin-bottom:18px">
 #   <div style="flex:0 0 285px;background:white;border:1px solid #d9e2e6;border-radius:10px;padding:16px;display:flex;align-items:center;justify-content:center">
