@@ -1,0 +1,2 @@
+[formats]
+"notebook/" = "ipynb,py:percent"
