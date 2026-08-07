@@ -1,5 +1,3 @@
-- Read all the notebook to follow all the ideas from Soraia
-- Define a python environment and create it for this particular coastal application.
 - Double check the current data used for testing purposes
 
 

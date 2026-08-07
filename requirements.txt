@@ -8,6 +8,7 @@ pyproj==3.7.1
 ipywidgets==8.1.8
 plotly==6.9.0
 xarray==2025.6.1
+PyYAML==6.0.3
 
 # Optional: enables satellite/basemap tiles in a few plots (notebook falls
 # back gracefully with a warning if this is not installed)
@@ -16,3 +17,6 @@ contextily==1.7.1
 # Needed to run/open the notebook itself
 ipykernel==7.3.0
 jupyterlab==4.6.2
+
+# Local `demonstrator` package (src/), installed in editable mode
+-e .
