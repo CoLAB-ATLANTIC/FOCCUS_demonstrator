@@ -4,9 +4,3 @@ repos:
     hooks:
       - id: jupytext
         args: [--sync]
-
-  - repo: https://github.com/kynan/nbstripout
-    rev: 0.9.1
-    hooks:
-      - id: nbstripout
-        args: [--extra-keys=metadata.language_info.version cell.metadata.execution]
