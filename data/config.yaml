@@ -1,0 +1,101 @@
+# Configuration for the FOCCUS D8.1 Tagus Overtopping Demonstrator notebook.
+# Paths in `data_dirs` and `hercules_files` are relative to `data_root`.
+
+data_root: ../data
+
+data_dirs:
+  tier1: tier1
+  aml_mohid: AML_domain/mohid
+  aml_swan: AML_domain/swan
+  caparica_xbeach: tier2/Caparica/xbeach
+  oeiras_xbeach: tier2/Oeiras/xbeach
+
+# Tier 1 is national, MOHID/SWAN belong to the AML (Tagus and Sado estuaries) domain,
+# and each XBeach result belongs to its respective local domain.
+hercules_files:
+  Tier1:
+    dir: tier1
+    filename: 2026-02-03.nc
+  MOHID:
+    dir: aml_mohid
+    filename: 2026020300.nc
+  SWAN:
+    dir: aml_swan
+    filename: tab_SWAN_LisOcean.tbl
+  XBeach_Caparica:
+    dir: caparica_xbeach
+    filename: caparica_hercules.nc
+  XBeach_Oeiras:
+    dir: oeiras_xbeach
+    filename: oeiras_hercules.nc
+
+tier1_hazard_classes:
+  0:
+    name: Not classified
+    meaning: No hazard class available
+    color: "#9e9e9e"
+  1:
+    name: Swash
+    meaning: Runup remains below the dune or structure toe
+    color: "#2ca25f"
+  2:
+    name: Collision
+    meaning: Runup reaches the dune or structure face
+    color: "#fdae61"
+  3:
+    name: Overwash
+    meaning: Runup exceeds the dune or structure crest
+    color: "#b2182b"
+  4:
+    name: Inundation
+    meaning: Mean water level continuously exceeds the crest
+    color: "#6a1b9a"
+
+regional_domain:
+  name: Lisbon Metropolitan Area domain
+  centre: [38.68, -9.25]
+  bounds: [[38.16, -9.65], [38.95, -8.65]]
+
+site_config:
+  caparica:
+    name: Costa da Caparica
+    municipality: Almada
+    lat: 38.65
+    lon: -9.24
+    bounds: [[38.63, -9.265], [38.67, -9.21]]
+    setting: Atlantic-facing sandy coast close to the Tagus mouth
+    exposure: High wave exposure
+    sensitivity: 1.08
+    color: "#1565c0"
+  cruz_quebrada:
+    name: Cruz Quebrada
+    municipality: Oeiras
+    lat: 38.7000
+    lon: -9.2522
+    bounds: [[38.686, -9.275], [38.714, -9.229]]
+    setting: Northern estuarine margin near the Jamor outlet
+    exposure: Locally constrained estuarine wave exposure
+    sensitivity: 0.86
+    color: "#00897b"
+
+risk_classes:
+  - risk_class: Low
+    lower: 0.00
+    upper: 0.35
+    color: "#2ca25f"
+    interpretation: No relevant signal in the demonstrator forecast.
+  - risk_class: Watch
+    lower: 0.35
+    upper: 0.55
+    color: "#ffd53b"
+    interpretation: Monitor conditions and forecast updates.
+  - risk_class: Warning
+    lower: 0.55
+    upper: 0.75
+    color: "#ff3c00"
+    interpretation: Potential impacts in exposed or low-lying areas.
+  - risk_class: Severe
+    lower: 0.75
+    upper: 1.00
+    color: "#6f18b2"
+    interpretation: High impact potential; inspect Tier 2 local maps.
