@@ -16,7 +16,7 @@
 # %% [markdown] tags=["overview"]
 # <div style="display:flex;gap:18px;align-items:stretch;margin-bottom:18px">
 #   <div style="flex:0 0 285px;background:white;border:1px solid #d9e2e6;border-radius:10px;padding:16px;display:flex;align-items:center;justify-content:center">
-#     <img src="../data/images/logos/FOCCUS_Logo_1.0.png" alt="FOCCUS project logo" style="width:255px;max-width:100%">
+#     <img src="../../data/images/logos/FOCCUS_Logo_1.0.png" alt="FOCCUS project logo" style="width:255px;max-width:100%">
 #   </div>
 #   <div style="flex:1;background:linear-gradient(120deg,#073b4c,#0b6e75);color:white;padding:28px 32px;border-radius:10px;display:flex;align-items:center;gap:26px;flex-wrap:wrap">
 #     <div style="flex:1 1 520px;min-width:0">
@@ -26,7 +26,7 @@
 #     </div>
 #   </div>
 #   <div style="flex:0 0 285px;background:white;border:1px solid #d9e2e6;border-radius:20px;padding:16px;display:flex;align-items:center;justify-content:center">
-#     <img src="../data/images/logos/Logo_+ATL_blue.png" alt="+ATLANTIC CoLAB logo" style="width:285px;max-width:60%">
+#     <img src="../../data/images/logos/Logo_+ATL_blue.png" alt="+ATLANTIC CoLAB logo" style="width:285px;max-width:60%">
 #   </div>
 # </div>
 #
@@ -61,7 +61,7 @@
 
 # %% [markdown] tags=["why-visual"]
 # <figure style="margin:18px 0 22px;background:#f6f9fa;border:1px solid #d9e2e6;border-radius:10px;overflow:hidden">
-#   <img src="../data/images/eslevents.png" alt="Extreme sea-level event exposure at Costa da Caparica and Cruz Quebrada" style="display:block;width:100%;height:auto">
+#   <img src="../../data/images/eslevents.png" alt="Extreme sea-level event exposure at Costa da Caparica and Cruz Quebrada" style="display:block;width:100%;height:auto">
 #   <figcaption style="padding:9px 14px;color:#455a64;font-size:13px">Coastal application use cases: Costa da Caparica (Almada) and Cruz Quebrada (Oeiras), two coastal areas with distinct geomorphological settings and hydrodynamic conditions, both highly vulnerable to extreme sea-level events.</figcaption>
 # </figure>
 

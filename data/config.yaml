@@ -1,7 +1,7 @@
 # Configuration for the FOCCUS D8.1 Tagus Overtopping Demonstrator notebook.
 # Paths in `data_dirs` and `hercules_files` are relative to `data_root`.
 
-data_root: ../data
+data_root: ../../data
 
 data_dirs:
   tier1: tier1

@@ -1,2 +1,2 @@
 [formats]
-"notebook/" = "ipynb,py:percent"
+"notebooks/dev/" = "ipynb,py:percent"
