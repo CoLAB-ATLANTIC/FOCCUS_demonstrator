@@ -3771,7 +3771,7 @@ display(explorer_panel)
 #
 # The demonstrator implements a multi-scale coastal forecasting workflow designed to improve storm surge, extreme water level, overtopping, and flooding forecasts in the Tagus Estuary and adjacent coastal areas. The workflow integrates hydrodynamic, wave, and coastal impact models to provide both national-scale and local-scale forecasts supporting coastal risk assessment and decision-making.
 #
-# MOHID Water (Campuzano, 2018) and Wave Watch III (WW3DG, 2019) provide the national forcing. Tier 1 converts site time series into a rapid first layer overtopping forecasting indicator. Tier 2 uses the coastal model XBeach (Roelvink, 2009) to predict coastal overtopping and flooding. XBeach model is feeded by MOHID Water and SWAN (Booij, 1996) models, coupled, for the Lisbon Metropolitan Area, both with a spatial resolution of 280 metres. The main variables considered in the forecasts include total water level, wave height and period.
+# MOHID Water (Campuzano, 2018) and WaveWatch III (WW3DG, 2019) provide the national forcing. Tier 1 converts site time series into a rapid first layer overtopping forecasting indicator. Tier 2 uses the coastal model XBeach (Roelvink, 2009) to predict coastal overtopping and flooding. XBeach model is feeded by MOHID Water and SWAN (Booij, 1996) models, coupled, for the Lisbon Metropolitan Area, both with a spatial resolution of 280 metres. The main variables considered in the forecasts include total water level, wave height and period.
 #
 # ### Integration within FOCCUS WP
 #
