@@ -112,20 +112,9 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
                     f"Available variables: {list(swan.data_vars)}"
                 )
 
-        times = pd.to_datetime(
-            mohid.time.values,
-            utc=True,
-        )
-
-        latitudes = np.asarray(
-            mohid.lat.values,
-            dtype=float,
-        )
-
-        longitudes = np.asarray(
-            mohid.lon.values,
-            dtype=float,
-        )
+        times = pd.to_datetime(mohid.time.values,utc=True)
+        latitudes = np.asarray(mohid.lat.values,dtype=float)
+        longitudes = np.asarray(mohid.lon.values,dtype=float)
 
         if latitudes.ndim != 1 or longitudes.ndim != 1:
             raise ValueError(
@@ -135,36 +124,24 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
 
         cubes = {
             "ssh": np.asarray(
-                mohid["ssh"]
-                .transpose("time", "lat", "lon")
-                .values,
+                mohid["ssh"].transpose("time", "lat", "lon").values,
                 dtype=float,
             ),
             "hs": np.asarray(
-                swan["significant_wave_height"]
-                .transpose("time", "lat", "lon")
-                .values,
+                swan["significant_wave_height"].transpose("time", "lat", "lon").values,
                 dtype=float,
             ),
             "period": np.asarray(
-                swan["wave_period"]
-                .transpose("time", "lat", "lon")
-                .values,
+                swan["wave_period"].transpose("time", "lat", "lon").values,
                 dtype=float,
             ),
             "direction": np.asarray(
-                swan["mean_wave_direction"]
-                .transpose("time", "lat", "lon")
-                .values,
+                swan["mean_wave_direction"].transpose("time", "lat", "lon").values,
                 dtype=float,
             ),
         }
 
-        expected_shape = (
-            len(times),
-            len(latitudes),
-            len(longitudes),
-        )
+        expected_shape = (len(times),len(latitudes),len(longitudes))
 
         for variable, cube in cubes.items():
             if cube.shape != expected_shape:
@@ -188,7 +165,6 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
         return times,latitudes,longitudes,cubes,common_valid_mask
 
     model_times,model_lat,model_lon,data_cubes,common_valid_mask = prepare_data()
-
     number_of_times = len(model_times)
 
     # Configuration for every map variable
@@ -197,7 +173,7 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
             "label": "Water level",
             "short_label": "SSH",
             "units": "m",
-            "colorscale": "Viridis",
+            "colorscale": "Viridis_r",
             "cube": data_cubes["ssh"],
             "fixed_range": None,
         },
@@ -240,67 +216,30 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
     def nearest_valid_cell(target_latitude, target_longitude):
         """Return the common valid cell nearest to the clicked position."""
 
-        latitude_difference = (
-            model_lat[:, None] - target_latitude
-        )
+        latitude_difference = (model_lat[:, None] - target_latitude)
 
-        longitude_difference = (
-            model_lon[None, :] - target_longitude
-        ) * np.cos(
-            np.deg2rad(target_latitude)
-        )
+        longitude_difference = (model_lon[None, :] - target_longitude) * \
+                                np.cos(np.deg2rad(target_latitude))
 
-        distance_squared = (
-            latitude_difference**2
-            + longitude_difference**2
-        )
+        distance_squared = (latitude_difference**2 + longitude_difference**2)
 
-        distance_squared = np.where(
-            common_valid_mask,
-            distance_squared,
-            np.inf,
-        )
+        distance_squared = np.where(common_valid_mask,distance_squared,np.inf,)
 
         if not np.isfinite(distance_squared).any():
-            raise ValueError(
-                "No valid model cell is available."
-            )
+            raise ValueError("No valid model cell is available.")
 
-        i, j = np.unravel_index(
-            np.argmin(distance_squared),
-            distance_squared.shape,
-        )
+        i, j = np.unravel_index(np.argmin(distance_squared),distance_squared.shape)
 
-        distance_km = (
-            np.sqrt(distance_squared[i, j])
-            * 111.32
-        )
+        distance_km = (np.sqrt(distance_squared[i, j]) * 111.32)
 
         return int(i), int(j), float(distance_km)
 
     def find_initial_cell():
         """Select the valid cell nearest to the domain centre."""
 
-        centre_latitude = float(
-            (
-                np.nanmin(model_lat)
-                + np.nanmax(model_lat)
-            )
-            / 2
-        )
-
-        centre_longitude = float(
-            (
-                np.nanmin(model_lon)
-                + np.nanmax(model_lon)
-            )
-            / 2
-        )
-
-        i, j, _ = nearest_valid_cell(
-            centre_latitude,
-            centre_longitude,
-        )
+        centre_latitude = float((np.nanmin(model_lat) + np.nanmax(model_lat))/ 2)
+        centre_longitude = float((np.nanmin(model_lon) + np.nanmax(model_lon))/ 2)
+        i, j, _ = nearest_valid_cell(centre_latitude,centre_longitude)
 
         return i, j
 
@@ -318,17 +257,10 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
         if finite_values.size == 0:
             return 0.0, 1.0
 
-        cmin, cmax = np.nanpercentile(
-            finite_values,
-            [2, 98],
-        )
+        cmin, cmax = np.nanpercentile(finite_values,[2, 98],)
 
         if np.isclose(cmin, cmax):
-            difference = max(
-                abs(float(cmin)) * 0.01,
-                0.01,
-            )
-
+            difference = max(abs(float(cmin)) * 0.01,0.01)
             cmin -= difference
             cmax += difference
 
@@ -342,7 +274,7 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
             copy=True,
         )
 
-        field[~common_valid_mask] = np.nan
+        field[~common_valid_mask] = None
 
         return field
 
@@ -351,9 +283,7 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
 
         timestamp = model_times[time_index]
 
-        return timestamp.strftime(
-            "%Y-%m-%d %H:%M UTC"
-        )
+        return timestamp.strftime("%Y-%m-%d %H:%M UTC")
 
     # ============================================================
     # 3. WIDGETS
@@ -384,13 +314,8 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
         description="Time:",
         continuous_update=True,
         readout=False,
-        style={
-            "description_width": "45px",
-        },
-        layout=widgets.Layout(
-            width="500px",
-        ),
-    )
+        style={"description_width": "45px"},
+        layout=widgets.Layout(width="500px"))
 
     play_widget = widgets.Play(
         value=0,
@@ -399,13 +324,9 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
         step=1,
         interval=400,
         description="Play",
-        disabled=False,
-    )
+        disabled=False)
 
-    widgets.jslink(
-        (play_widget, "value"),
-        (time_slider, "value"),
-    )
+    widgets.jslink((play_widget, "value"),(time_slider, "value"))
 
     time_label = widgets.HTML()
 
@@ -452,7 +373,7 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
                     colorbar={
                         "title": (
                             f"{config['short_label']} "
-                            f"({config['units']})"
+                            f"[{config['units']}]"
                         ),
                     },
                     hoverongaps=False,
@@ -473,7 +394,7 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
                     showlegend=False,
                     marker={
                         "size": 15,
-                        "color": "#ff1744",
+                        "color": "#850720",
                         "symbol": "x",
                         "line": {
                             "width": 2,
@@ -497,6 +418,9 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
         figure.update_layout(
             width=map_width,
             height=figure_height,
+            font={
+                "family": "Helvetica",
+                },
             template="plotly_white",
             showlegend=True,
             margin={
@@ -507,25 +431,20 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
             },
             uirevision="preserve-map-view",
             xaxis={
-                "title": "Longitude (°E)",
+                "title": "Longitude [°E]",
                 "range": [
                     float(np.nanmin(model_lon)),
                     float(np.nanmax(model_lon)),
                 ],
             },
             yaxis={
-                "title": "Latitude (°N)",
+                "title": "Latitude [°N]",
                 "range": [
                     float(np.nanmin(model_lat)),
                     float(np.nanmax(model_lat)),
                 ],
                 "scaleanchor": "x",
-                "scaleratio": (
-                    1
-                    / np.cos(
-                        np.deg2rad(mean_latitude)
-                    )
-                ),
+                "scaleratio": (1/np.cos(np.deg2rad(mean_latitude)))
             },
         )
 
@@ -544,7 +463,7 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
             rows=4,
             cols=1,
             shared_xaxes=True,
-            vertical_spacing=0.055,
+            vertical_spacing=0.06,
             subplot_titles=[
                 "Water level",
                 "Significant wave height",
@@ -614,9 +533,7 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
         )
 
         # Vertical line showing the current animation time
-        current_time = model_times[
-            time_slider.value
-        ]
+        current_time = model_times[time_slider.value]
 
         figure.add_vline(
             x=current_time,
@@ -632,6 +549,9 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
         figure_widget.update_layout(
             width=series_width,
             height=figure_height,
+            font={
+                "family": "Helvetica",
+                },
             template="plotly_white",
             hovermode="x unified",
             showlegend=False,
@@ -644,25 +564,25 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
         )
 
         figure_widget.update_yaxes(
-            title_text="SSH (m)",
+            title_text="SSH [m]",
             row=1,
             col=1,
         )
 
         figure_widget.update_yaxes(
-            title_text="Hs (m)",
+            title_text="Hs [m]",
             row=2,
             col=1,
         )
 
         figure_widget.update_yaxes(
-            title_text="Tp (s)",
+            title_text="Tp [s]",
             row=3,
             col=1,
         )
 
         figure_widget.update_yaxes(
-            title_text="Dir (°)",
+            title_text="Dir [°]",
             range=[0, 360],
             dtick=90,
             row=4,
@@ -670,7 +590,7 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
         )
 
         figure_widget.update_xaxes(
-            title_text="Time (UTC)",
+            title_text="Time [UTC]",
             row=4,
             col=1,
         )
@@ -728,7 +648,7 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
             heatmap.colorbar = {
                 "title": (
                     f"{config['short_label']} "
-                    f"({config['units']})"
+                    f"[{config['units']}]"
                 )
             }
 
@@ -744,10 +664,10 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
                 f"{config['label']} — "
                 f"{format_model_time(time_index)}<br>"
                 "<sup>Click on the map to select a point "
-                "to inspect water level and waves conditions</sup>"
+                "to inspect water level and wave conditions</sup>"
             )
 
-        update_time_label()
+        #update_time_label()
 
     def update_time_indicator():
         """Move the vertical time indicator on all time-series plots."""
@@ -828,8 +748,8 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
             series_figure.layout.title = (
                 "Time series at the selected point<br>"
                 f"<sup>{latitude:.5f}°N, "
-                f"{longitude:.5f}°E · "
-                f"i={i}, j={j}</sup>"
+                f"{longitude:.5f}°E "
+                #f"i={i}, j={j}</sup>"
             )
 
         with map_figure.batch_update():

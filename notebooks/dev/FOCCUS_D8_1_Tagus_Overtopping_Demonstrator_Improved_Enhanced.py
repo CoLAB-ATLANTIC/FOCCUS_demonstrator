@@ -190,16 +190,95 @@ XBEACH_ANIMATION_FILES = {
     "caparica": HERCULES_FILES["XBeach_Caparica"],
     "oeiras": HERCULES_FILES["XBeach_Oeiras"],
 }
+
 XBEACH_ANIMATION_NAMES = {
     "caparica": "Costa da Caparica",
     "oeiras": "Oeiras",
 }
-case_id='oeiras'
-dict_oeiras = load_xbeach_animation_frames(
+
+xbeach_case_selector = widgets.Dropdown(
+    options=[
+        ("Costa da Caparica, Almada", "caparica"),
+        ("Cruz Quebrada, Oeiras", "oeiras"),
+    ],
+    value="oeiras",
+    description="Study area:",
+    style={"description_width": "80px"},
+    layout=widgets.Layout(width="310px"),
+)
+
+xbeach_status = widgets.HTML(value="")
+
+xbeach_output = widgets.Output(
+    layout=widgets.Layout(width="100%", min_height="300px")
+)
+
+_xbeach_surface_cache = {}
+
+def get_selected_surface():
+    """Load (or retrieve from cache) the XBeach animation data for the selected study area."""
+    case_id = xbeach_case_selector.value
+    if case_id not in _xbeach_surface_cache:
+        _xbeach_surface_cache[case_id] = load_xbeach_animation_frames(
             path=XBEACH_ANIMATION_FILES[case_id],
             site_name=XBEACH_ANIMATION_NAMES[case_id],
         )
-print(dict_oeiras)
+    return _xbeach_surface_cache[case_id]
+
+
+# %%
+def render_xbeach_panel():
+    """Render the flooding animation and status line for the current widget selection."""
+    xbeach_case_selector.disabled = True
+    xbeach_status.value = "<span style='color:#555;'>Loading flooding animation...</span>"
+
+    try:
+        surface = get_selected_surface()
+        animation_html = make_xbeach_animation(
+            surface=surface,
+            interval_ms=250
+        )
+
+        with xbeach_output:
+            clear_output(wait=True)
+            display(HTML(animation_html))
+        xbeach_status.value = "<span style='color:#555;'></span>"
+
+
+    except Exception as error:
+        with xbeach_output:
+            clear_output(wait=True)
+            print(f"{type(error).__name__}: {error}")
+        xbeach_status.value = f"<span style='color:#b00020;'><b>Error:</b> {error}</span>"
+
+    finally:
+        xbeach_case_selector.disabled = False
+
+
+def on_case_change(change):
+    if change["name"] == "value":
+        render_xbeach_panel()
+
+xbeach_case_selector.observe(on_case_change, names="value")
+
+xbeach_controls = widgets.VBox(
+    [
+        widgets.HBox(
+            [xbeach_case_selector],
+            layout=widgets.Layout(flex_flow="row wrap", align_items="center", gap="12px"),
+        ),
+        xbeach_status,
+    ],
+    layout=widgets.Layout(width="100%", margin="0 0 8px 0"),
+)
+
+flood_map_panel = widgets.VBox(
+    [xbeach_controls, xbeach_output],
+    layout=widgets.Layout(width="100%"),
+)
+
+display(flood_map_panel)
+render_xbeach_panel()
 
 # %%
 XBEACH_ANIMATION_FILES = {

@@ -1,5 +1,7 @@
+import ipywidgets as widgets
 import numpy as np
 import xarray as xr
+from IPython.display import HTML, clear_output, display
 from matplotlib import animation as mpl_animation
 from matplotlib import pyplot as plt
 from matplotlib.colors import BoundaryNorm
@@ -430,9 +432,118 @@ def make_xbeach_animation(surface, interval_ms=250):
     )
 
     try:
-        with plt.rc_context({"animation.embed_limit": 100.0}):
+        with plt.rc_context({"animation.embed_limit": 200.0}):
             html = player.to_jshtml(fps=1000 / interval_ms, embed_frames=True, default_mode="loop")
     finally:
         plt.close(fig)
 
     return html
+
+
+# ------------------------------------------------------------
+# Interactive panel
+# ------------------------------------------------------------
+
+def build_xbeach_flooding_panel(animation_files, animation_names, interval_ms=250):
+    """Build an interactive XBeach flooding-animation explorer.
+
+    Lets the user pick a study area from a dropdown and renders its
+    flood-map/runup animation (built with :func:`make_xbeach_animation`
+    from data loaded via :func:`load_xbeach_animation_frames`), caching
+    loaded surfaces so switching back to a previously viewed study area
+    is instant.
+
+    Parameters
+    ----------
+    animation_files : dict
+        Maps a study-area id (e.g. ``"caparica"``) to the path of its
+        XBeach output netCDF file.
+    animation_names : dict
+        Maps the same study-area ids to a human-readable label
+        (e.g. ``"Costa da Caparica"``), used for the dropdown options
+        and passed to :func:`load_xbeach_animation_frames` as ``site_name``.
+    interval_ms : int
+        Delay between animation frames, in milliseconds.
+
+    Returns
+    -------
+    ipywidgets.VBox
+        Complete interactive application.
+    """
+
+    surface_cache = {}
+
+    def get_selected_surface():
+        """Load (or retrieve from cache) the XBeach animation data for the selected study area."""
+        case_id = case_selector.value
+        if case_id not in surface_cache:
+            surface_cache[case_id] = load_xbeach_animation_frames(
+                path=animation_files[case_id],
+                site_name=animation_names[case_id],
+            )
+        return surface_cache[case_id]
+
+    def render_panel(change=None):
+        """Render the flooding animation and status line for the current widget selection."""
+        case_selector.disabled = True
+        status.value = "<span style='color:#555;'>Loading flooding animation...</span>"
+
+        try:
+            surface = get_selected_surface()
+            animation_html = make_xbeach_animation(surface, interval_ms=interval_ms)
+
+            with output:
+                clear_output(wait=True)
+                display(HTML(animation_html))
+
+            status.value = ""
+
+        except Exception as error:
+            with output:
+                clear_output(wait=True)
+                print(f"{type(error).__name__}: {error}")
+            status.value = f"<span style='color:#b00020;'><b>Error:</b> {error}</span>"
+
+        finally:
+            case_selector.disabled = False
+
+    def case_changed(change):
+        if change["name"] == "value":
+            render_panel()
+
+    case_selector = widgets.Dropdown(
+        options=[
+            ("Costa da Caparica, Almada", "caparica"),
+            ("Cruz Quebrada, Oeiras", "oeiras"),
+        ],        
+        value="oeiras",
+        description="Study area:",
+        style={"description_width": "80px"},
+        layout=widgets.Layout(width="310px"),
+    )
+
+    status = widgets.HTML(value="")
+
+    output = widgets.Output(layout=widgets.Layout(width="100%", min_height="300px"))
+
+    case_selector.observe(case_changed, names="value")
+
+    controls = widgets.VBox(
+        [
+            widgets.HBox(
+                [case_selector],
+                layout=widgets.Layout(flex_flow="row wrap", align_items="center", gap="12px"),
+            ),
+            status,
+        ],
+        layout=widgets.Layout(width="100%", margin="0 0 8px 0"),
+    )
+
+    application = widgets.VBox(
+        [controls, output],
+        layout=widgets.Layout(width="100%"),
+    )
+
+    render_panel()
+
+    return application
