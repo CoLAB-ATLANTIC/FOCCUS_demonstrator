@@ -20,7 +20,7 @@ except ImportError:
 
 XBEACH_CRS = "EPSG:32629"
 MINIMUM_WATER_DEPTH_M = 0.05
-MAXIMUM_ANIMATION_FRAMES = 2
+MAXIMUM_ANIMATION_FRAMES = 92
 
 
 # ------------------------------------------------------------
