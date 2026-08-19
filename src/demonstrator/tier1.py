@@ -7,7 +7,6 @@ import xarray as xr
 from folium import FeatureGroup
 from folium.plugins import Fullscreen, MeasureControl, MousePosition
 
-
 def load_tier1_event_summary(path: Path):
     with xr.open_dataset(path) as dataset:
         regime = np.asarray(dataset["Regime"].values, dtype=int)
