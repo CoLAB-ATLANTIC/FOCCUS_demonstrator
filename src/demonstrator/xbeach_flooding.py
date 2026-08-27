@@ -306,7 +306,7 @@ def _plot_runup_series(series_axis, times_full, runup_full, times_98th, runup_98
     """
 
     series_axis.plot(times_full, runup_full, color="#cac4cb", linewidth=1.8, label="Runup")
-    #series_axis.plot(times_98th, runup_98th[:-1], color="#e27406", linewidth=1.8, label="R2")
+    series_axis.plot(times_98th, runup_98th[:-1], color="#e27406", linewidth=1.8, label="R2")
 
     current_time_line = series_axis.axvline(
         times_98th[0], color="#d32f2f", linewidth=1.5, linestyle="--", label="Current time"
@@ -525,6 +525,17 @@ def build_xbeach_flooding_panel(animation_files, animation_names, interval_ms=25
     status = widgets.HTML(value="")
 
     output = widgets.Output(layout=widgets.Layout(width="100%", min_height="300px"))
+    # Track when the Output widget actually gets a view in the browser: pushing
+    # the animation HTML before that happens races the jshtml <script>/<div>
+    # pair against the DOM and leaves the GIF blank on the notebook's first run.
+    output._view_count = 0
+
+    def _render_once_displayed(change):
+        if change["new"]:
+            output.unobserve(_render_once_displayed, names="_view_count")
+            render_panel()
+
+    output.observe(_render_once_displayed, names="_view_count")
 
     case_selector.observe(case_changed, names="value")
 
@@ -543,7 +554,5 @@ def build_xbeach_flooding_panel(animation_files, animation_names, interval_ms=25
         [controls, output],
         layout=widgets.Layout(width="100%"),
     )
-
-    render_panel()
 
     return application

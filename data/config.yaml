@@ -5,8 +5,8 @@ data_root: ../../data
 
 data_dirs:
   tier1: tier1
-  aml_mohid: AML_domain/mohid
-  aml_swan: AML_domain/swan
+  aml_mohid: AML_domain/mohid/Winter2026
+  aml_swan: AML_domain/swan/Winter2026
   caparica_xbeach: tier2/Caparica/xbeach
   oeiras_xbeach: tier2/Oeiras/xbeach
 
@@ -18,10 +18,10 @@ hercules_files:
     filename: 2026-02-03.nc
   MOHID:
     dir: aml_mohid
-    filename: 2026020300.nc
+    filename: 202602*.nc
   SWAN:
     dir: aml_swan
-    filename: tab_SWAN_LisOcean.tbl
+    filename: tab_SWAN_LisOcean_202602*.tbl
   XBeach_Caparica:
     dir: caparica_xbeach
     filename: caparica_hercules.nc
@@ -46,10 +46,10 @@ tier1_hazard_classes:
     name: Overwash
     meaning: Runup exceeds the dune or structure crest
     color: "#b2182b"
-  4:
-    name: Inundation
-    meaning: Mean water level continuously exceeds the crest
-    color: "#6a1b9a"
+  # 4:
+  #   name: Inundation
+  #   meaning: Mean water level continuously exceeds the crest
+  #   color: "#6a1b9a"
 
 regional_domain:
   name: Lisbon Metropolitan Area domain

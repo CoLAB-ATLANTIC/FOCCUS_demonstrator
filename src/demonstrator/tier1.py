@@ -87,13 +87,16 @@ def make_study_area_map(regional_domain, site_config, tier1_path, hazard_classes
         f"<div><span style='display:inline-block;width:11px;height:11px;border-radius:50%;"
         f"background:{hazard_classes[value]['color']};margin-right:6px'></span>"
         f"<b>{value} — {hazard_classes[value]['name']}</b>: "
-        f"{hazard_classes[value]['meaning']}</div>" for value in [1, 2, 3, 4]
+        # f"{hazard_classes[value]['meaning']}</div>" for value in [1, 2, 3, 4]
+        f"{hazard_classes[value]['meaning']}</div>" for value in [1, 2, 3]
+
     )
     legend = (
         "<div style='position:fixed;bottom:28px;left:28px;z-index:9999;background:white;"
         "padding:11px 14px;border:1px solid #777;border-radius:6px;font-size:12px;max-width:370px'>"
+        #"<b>Flooding Hazard Index</b>"
         "<b>Flooding Hazard Index</b><br><span style='color:#555'>Maximum over 3 February 2026 (24 h)</span>"
-        + legend_items + "</div>"
+        + legend_items + "</div>"\
     )
     fmap.get_root().html.add_child(folium.Element(legend))
     Fullscreen(position="topright").add_to(fmap)

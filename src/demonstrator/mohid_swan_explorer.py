@@ -9,17 +9,48 @@ from IPython.display import display
 from plotly.subplots import make_subplots
 
 
-def read_hercules_swan_table(path, mohid):
+def read_mohid_files(path):
     path = Path(path)
 
-    grid_shape = (mohid.sizes["time"], mohid.sizes["lat"], mohid.sizes["lon"])
+    paths = sorted(path.parent.glob(path.name))
+
+    if not paths:
+        raise FileNotFoundError(f"Nenhum ficheiro MOHID *.nc encontrado em {path}.")
+
+    datasets = [xr.open_dataset(p) for p in paths]
+
+    mohid = xr.concat(datasets, dim="time")
+
+    mohid = mohid.sortby("time")
+
+    _, unique_idx = np.unique(mohid["time"], return_index=True)
+    mohid = mohid.isel(time=unique_idx[:-1])
+
+    return mohid
+
+def read_swan_table_files(path, ssh_ds=None):
+    path = Path(path)
+
+    paths = sorted(path.parent.glob(path.name))
+
+    if not paths:
+        raise FileNotFoundError(f"Nenhum ficheiro SWAN *.tbl encontrado em {path}.")
+
+
+    grid_shape = (ssh_ds.sizes["time"], ssh_ds.sizes["lat"], ssh_ds.sizes["lon"]) # in case ssh matches swan grid
+    #grid_shape = (int(24*7), 285, 355)  # assuming 7 days of hourly data, 285 lat points, and matching lon points
 
     expected_rows = int(np.prod(grid_shape))
 
-    raw = np.loadtxt(path,usecols=(0, 1, 2),dtype=np.float32)
+    raw = np.concatenate(
+        [np.loadtxt(p, usecols=(0, 1, 2), dtype=np.float32).reshape(-1, 3)[:-int( ssh_ds.sizes["lat"] * ssh_ds.sizes["lon"]),:] for p in paths],
+        axis=0,
+    )
 
-    if raw.ndim == 1:
-        raw = raw.reshape(1, -1)
+    # raw = np.concatenate(
+    #     [np.loadtxt(p, usecols=(0, 1, 2), dtype=np.float32).reshape(-1, 3) for p in paths],
+    #     axis=0,
+    # )
 
     if raw.shape != (expected_rows, 3):
         raise ValueError(
@@ -28,6 +59,8 @@ def read_hercules_swan_table(path, mohid):
         )
 
     raw = raw.reshape(*grid_shape, 3)
+
+    time = np.datetime64("2014-01-01T00:00:00") + np.arange(grid_shape[0]) * np.timedelta64(1, "h")
 
     return xr.Dataset(
         data_vars={
@@ -45,11 +78,29 @@ def read_hercules_swan_table(path, mohid):
             ),
         },
         coords={
-            "time": mohid.time.values,
-            "lat": mohid.lat.values,
-            "lon": mohid.lon.values,
+            "time": time,
+            "lat": ssh_ds.lat.values,
+            "lon": ssh_ds.lon.values,
         },
     )
+
+
+def read_ibi_files(path):
+    path = Path(path)
+
+    paths = sorted(path.parent.glob(path.name))
+
+    if not paths:
+        raise FileNotFoundError(f"Nenhum ficheiro IBI *.nc encontrado em {path}.")
+
+    datasets = [xr.open_dataset(p) for p in paths]
+    
+
+    ibi = xr.concat(datasets, dim="time")
+
+    ibi = ibi.sortby("time")
+
+    return ibi
 
 
 def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_height=570):
@@ -477,7 +528,7 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
                 x=[],
                 y=[],
                 mode="lines",
-                name="Water level (SSH)",
+                name="SSH [m]",
                 line={
                     "color": "#1565c0",
                     "width": 2,
@@ -492,7 +543,7 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
                 x=[],
                 y=[],
                 mode="lines",
-                name="Significant wave height (Hs)",
+                name="Hs [m]",
                 line={
                     "color": "#00897b",
                     "width": 2,
@@ -507,7 +558,7 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
                 x=[],
                 y=[],
                 mode="lines",
-                name="Wave period (Tp)",
+                name="Tp [s]",
                 line={
                     "color": "#ef6c00",
                     "width": 2,
@@ -521,11 +572,18 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
             go.Scatter(
                 x=[],
                 y=[],
-                mode="lines",
-                name="Mean wave direction",
-                line={
-                    "color": "#6a1b9a",
-                    "width": 2,
+                mode="markers",
+                name="Dir [°]",
+                marker={
+                    "symbol": "arrow",
+                    "size": 8,
+                    "angle": [],
+                    "angleref": "up",
+                    "color": "#790FBB",
+                    "line": {
+                        "color": "#790FBB",
+                        "width": 1,
+                    },
                 },
             ),
             row=4,
@@ -554,6 +612,16 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
                 },
             template="plotly_white",
             hovermode="x unified",
+            hoverlabel={
+                "font": {
+                    "family": "Helvetica",
+                    "size": 13,        # bump this up — larger font = larger box
+                },
+                "namelength": -1,       # -1 = don't truncate trace names at all
+                "bgcolor": "white",
+                "bordercolor": "#1a181a",
+                "align": "left",
+            },
             showlegend=False,
             margin={
                 "l": 75,
@@ -740,10 +808,11 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
                 data_cubes["period"][:, i, j]
             )
 
+            direction_values = data_cubes["direction"][:, i, j]
+
             series_figure.data[3].x = model_times
-            series_figure.data[3].y = (
-                data_cubes["direction"][:, i, j]
-            )
+            series_figure.data[3].y = direction_values
+            series_figure.data[3].marker.angle = (direction_values + 180) % 360
 
             series_figure.layout.title = (
                 "Time series at the selected point<br>"

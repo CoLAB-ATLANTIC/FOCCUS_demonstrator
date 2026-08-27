@@ -120,12 +120,13 @@ from plotly.subplots import make_subplots
 import xarray as xr
 import yaml
 
-from demonstrator.tier1 import load_tier1_event_summary, make_study_area_map
+from demonstrator.tier1 import make_study_area_map
 from demonstrator.xbeach_flooding import load_xbeach_animation_frames, make_xbeach_animation
-from demonstrator.mohid_swan_explorer import read_hercules_swan_table, build_mohid_swan_explorer
+from demonstrator.mohid_swan_explorer import read_mohid_files,read_swan_table_files,build_mohid_swan_explorer
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", message="Pandas requires version.*")
+warnings.filterwarnings("ignore", category=UserWarning)
 
 plt.rcParams.update(
     {
@@ -148,7 +149,7 @@ HERCULES_FILES = {
     name: DATA_DIRS[entry["dir"]] / entry["filename"]
     for name, entry in CONFIG["hercules_files"].items()
 }
-missing_data_files = [path for path in HERCULES_FILES.values() if not path.is_file()]
+missing_data_files = [path for path in HERCULES_FILES.values() if not path.is_file() and '*' not in path.name]
 if missing_data_files:
     missing_list = "\n".join(f"- {path.as_posix()}" for path in missing_data_files)
     raise FileNotFoundError(f"Required demonstrator data files are missing:\n{missing_list}")
@@ -277,8 +278,8 @@ flood_map_panel = widgets.VBox(
     layout=widgets.Layout(width="100%"),
 )
 
-display(flood_map_panel)
-render_xbeach_panel()
+# display(flood_map_panel)
+# render_xbeach_panel()
 
 # %%
 XBEACH_ANIMATION_FILES = {
@@ -411,10 +412,10 @@ flood_map_panel = widgets.VBox(
     layout=widgets.Layout(width="100%"),
 )
 
-display(flood_map_panel)
+# display(flood_map_panel)
 
 # update_point_slider()
-render_xbeach_panel()
+# render_xbeach_panel()
 
 # %% [markdown]
 # ## Interactive Time Series
@@ -427,45 +428,30 @@ render_xbeach_panel()
 #
 
 # %%
-real_mohid = xr.open_dataset(
-    HERCULES_FILES["MOHID"]
-)
+mohid_ds = read_mohid_files(path=HERCULES_FILES["MOHID"])
 
 # %%
-real_mohid
+mohid_ds
 
 # %%
-HERCULES_FILES["SWAN"]
-
-# %%
-real_swan = read_hercules_swan_table(
+swan_ds = read_swan_table_files(
     Path(HERCULES_FILES["SWAN"]),
-    real_mohid,
+    ssh_ds=mohid_ds
 )
 
 # %%
-real_swan
+swan_ds
 
 # %%
-real_mohid = xr.open_dataset(
-    HERCULES_FILES["MOHID"]
-)
-
-real_swan = read_hercules_swan_table(
-    Path(HERCULES_FILES["SWAN"]),
-    real_mohid,
-)
-
 explorer_panel = build_mohid_swan_explorer(
-    real_mohid,
-    real_swan,
+    mohid_ds,
+    swan_ds,
     map_width=680,
     series_width=680,
     figure_height=590,
 )
 
 display(explorer_panel)
-
 
 # %% [markdown]
 # <!-- ### Validation -->
@@ -482,14 +468,14 @@ display(explorer_panel)
 # ### Integration within FOCCUS WP
 #
 # <div style="background:white;padding:14px;border:1px solid #d9e2e6;border-radius:8px;text-align:center">
-#   <img src="Images/WP_Integration.png" alt="Integration flowchart within the FOCCUS work packages" style="width:min(80%,980px);height:auto">
+#   <img src="../../data/images/schemes/WP_Integration.png" alt="Integration flowchart within the FOCCUS work packages" style="width:min(80%,980px);height:auto">
 # </div>
 
 # %% [markdown] tags=["how", "pdf"]
 # ### Schematic workflow
 
 # %% hide_input=true jupyter={"source_hidden": true} tags=["hide-input", "remove-input", "pdf"]
-workflow_pdf_path = Path("Images") / "DF323.pdf"
+workflow_pdf_path = Path("../../data/images/schemes" ) / "DF323.pdf"
 workflow_pdf_b64 = base64.b64encode(workflow_pdf_path.read_bytes()).decode("ascii")
 workflow_pdf_html = HTML(
     f"""<div style='border:1px solid #d9e2e6;border-radius:8px;overflow:hidden;background:white'>
@@ -537,3 +523,6 @@ display(workflow_pdf_html)
 # Turner, I. L., Leaman, C. K., Harley, M. D., Thran, M. C., David, D. R., Splinter, K. D., Matheen, N., Hansen, J. E., Cuttler, M. V. W., Greenslade, D. J. M., Zieger, S., & Lowe, R. J., 2024. ‘A framework for national-scale coastal storm hazards early warning’, Coastal Engineering, 192, 104571. https://doi.org/10.1016/j.coastaleng.2024.104571
 #
 # WW3DG, T., 2019. ‘User manual and system documentation of Wavewatch III version 6’,07. NOAA NWS NCEP MMAB Tech Note, 333, 465.
+
+# %% [markdown]
+#
