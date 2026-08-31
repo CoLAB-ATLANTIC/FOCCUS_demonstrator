@@ -7,8 +7,8 @@ data_dirs:
   tier1: tier1
   aml_mohid: AML_domain/mohid/Winter2026
   aml_swan: AML_domain/swan/Winter2026
-  caparica_xbeach: tier2/Caparica/xbeach
-  oeiras_xbeach: tier2/Oeiras/xbeach
+  caparica_xbeach: tier2/Caparica
+  oeiras_xbeach: tier2/Oeiras
 
 # Tier 1 is national, MOHID/SWAN belong to the AML (Tagus and Sado estuaries) domain,
 # and each XBeach result belongs to its respective local domain.
@@ -24,10 +24,10 @@ hercules_files:
     filename: tab_SWAN_LisOcean_202602*.tbl
   XBeach_Caparica:
     dir: caparica_xbeach
-    filename: caparica_hercules.nc
+    filename: Caparica_Winter2026.nc
   XBeach_Oeiras:
     dir: oeiras_xbeach
-    filename: oeiras_hercules.nc
+    filename: Oeiras_Winter2026.nc
 
 tier1_hazard_classes:
   0:

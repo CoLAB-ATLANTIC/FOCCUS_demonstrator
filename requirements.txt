@@ -1,4 +1,4 @@
-# Core dependencies to run FOCCUS_D8_1_Tagus_Overtopping_Demonstrator_Improved_Enhanced.ipynb
+# Core dependencies to coastal application
 folium==0.20.0
 matplotlib==3.10.9
 numpy==2.2.6
