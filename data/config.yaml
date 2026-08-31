@@ -12,7 +12,7 @@ data_dirs:
 
 # Tier 1 is national, MOHID/SWAN belong to the AML (Tagus and Sado estuaries) domain,
 # and each XBeach result belongs to its respective local domain.
-hercules_files:
+XBeach_files:
   Tier1:
     dir: tier1
     filename: 2026-02-03.nc
