@@ -11,6 +11,5 @@ __pycache__/
 
 # Large local data (not meant for the GitHub repo)
 data/AML_domain
-data/tier1
 data/tier2
 *.7z
