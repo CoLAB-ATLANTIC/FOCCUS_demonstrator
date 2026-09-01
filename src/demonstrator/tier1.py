@@ -8,7 +8,7 @@ from folium import FeatureGroup
 from folium.plugins import Fullscreen, MeasureControl, MousePosition
 
 def load_tier1_event_summary(path: Path):
-    with xr.open_dataset(path) as dataset:
+    with xr.open_dataset(path, decode_timedelta=True) as dataset:
         regime = np.asarray(dataset["Regime"].values, dtype=int)
         peak_step = np.argmax(regime, axis=0)
         max_regime = np.max(regime, axis=0)

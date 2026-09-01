@@ -121,7 +121,7 @@ import xarray as xr
 import yaml
 
 from demonstrator.tier1 import make_study_area_map
-from demonstrator.xbeach_flooding import load_xbeach_animation_frames, make_xbeach_animation
+from demonstrator.tier2 import load_xbeach_animation_frames, make_xbeach_animation
 from demonstrator.mohid_swan_explorer import read_mohid_files,read_swan_table_files,build_mohid_swan_explorer
 
 warnings.filterwarnings("ignore", category=FutureWarning)
