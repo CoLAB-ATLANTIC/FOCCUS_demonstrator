@@ -23,7 +23,7 @@ source $INSTALL_DIR/etc/profile.d/conda.sh
 
 ### === Create and activate environment ===
 echo "🧪 Creating conda environment 'foccus_storm_surge_demonstrator'..."
-conda create -y -n foccus_storm_surge_demonstrator python=3.10
+conda create -y -n foccus_storm_surge_demonstrator python=3.10.9
 conda activate foccus_storm_surge_demonstrator
 
 # Install mamba

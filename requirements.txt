@@ -17,8 +17,10 @@ s3fs
 contextily==1.7.1
 
 # Needed to run/open the notebook itself
-ipykernel==7.3.0
-jupyterlab==4.6.2
+ipykernel
+jupyterlab
+nbformat
+nbconvert
 
 # Local `demonstrator` package (src/), installed in editable mode
 -e .
