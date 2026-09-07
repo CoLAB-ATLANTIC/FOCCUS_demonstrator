@@ -43,7 +43,7 @@ mamba install -y -c conda-forge \
   xarray==2025.6.1 \
   pyyaml==6.0.3 \
   contextily==1.7.1 \
-  pymupdf=1.28\
+  pymupdf \
   s3fs \
   ipykernel jupyterlab nbformat nbconvert
 
@@ -88,15 +88,5 @@ echo "🧼 Clearing cell outputs..."
 jupyter nbconvert --clear-output --inplace "$NOTEBOOK"
 
 echo "✅ Setup complete. You can now open $REPO_DIR/$NOTEBOOK and it will use the 'foccus_storm_surge_demonstrator' kernel by default."
-
-### === Download large local data (gitignored: tier1, tier2, AML_domain) ===
-# TODO: data/tier1, data/tier2, and data/AML_domain are not tracked in the
-# GitHub repo (see .gitignore) and have no download source configured yet.
-# Fill this in once an S3/MinIO bucket or HTTPS location is available, e.g.:
-#   mc cp -r <bucket>/tier1     data/tier1
-#   mc cp -r <bucket>/tier2     data/tier2
-#   mc cp -r <bucket>/AML_domain data/AML_domain
-mkdir -p data/tier1 data/tier2 data/AML_domain
-echo "⚠️  Skipping tier1/tier2/AML_domain download — source not configured yet (see TODO above)."
 
 rm init.sh
