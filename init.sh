@@ -26,26 +26,28 @@ echo "🧪 Creating conda environment 'foccus_storm_surge_demonstrator'..."
 conda create -y -n foccus_storm_surge_demonstrator python=3.10.9
 conda activate foccus_storm_surge_demonstrator
 
-# Install mamba
-conda install -y -c conda-forge mamba
 
-### === Install exact packages ===
-echo "📦 Installing required packages..."
-mamba install -y -c conda-forge \
-  folium==0.20.0 \
-  matplotlib==3.10.9 \
-  numpy==2.2.6 \
-  pandas==2.3.3 \
-  netcdf4==1.7.4 \
-  pyproj==3.7.1 \
-  ipywidgets==8.1.8 \
-  plotly==6.9.0 \
-  xarray==2025.6.1 \
-  pyyaml==6.0.3 \
-  contextily==1.7.1 \
-  pymupdf \
-  s3fs \
-  ipykernel jupyterlab nbformat nbconvert
+conda install -y -c conda-forge
+# Install mamba
+# conda install -y -c conda-forge mamba
+
+# ### === Install exact packages ===
+# echo "📦 Installing required packages..."
+# mamba install -y -c conda-forge \
+#   folium==0.20.0 \
+#   matplotlib==3.10.9 \
+#   numpy==2.2.6 \
+#   pandas==2.3.3 \
+#   netcdf4==1.7.4 \
+#   pyproj==3.7.1 \
+#   ipywidgets==8.1.8 \
+#   plotly==6.9.0 \
+#   xarray==2025.6.1 \
+#   pyyaml==6.0.3 \
+#   contextily==1.7.1 \
+#   pymupdf \
+#   s3fs \
+#   ipykernel jupyterlab nbformat nbconvert
 
 ### === Register kernel for Jupyter ===
 echo "🔗 Registering Jupyter kernel..."
@@ -58,8 +60,9 @@ BRANCH_NAME=main
 git clone --branch "$BRANCH_NAME" --single-branch https://github.com/CoLAB-ATLANTIC/FOCCUS_demonstrator.git "$REPO_DIR"
 cd "$REPO_DIR"
 
-mv notebooks/final/FOCCUS_D8_1_Demonstrator.ipynb notebooks/main.ipynb
-rm -rf notebooks/final
+python -m pip install -r requirements.txt
+
+mv notebooks/FOCCUS_D8_1_Demonstrator.ipynb notebooks/main.ipynb
 
 echo "📦 Installing local 'demonstrator' package (editable)..."
 pip install -e .
