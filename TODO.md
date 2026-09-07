@@ -1,3 +1,0 @@
-- [ ] Solve the computation of the shoreline
-- [ ] Add the total water level (TWL) to the runup plot
-- [ ] Check the bug in the flooding map
