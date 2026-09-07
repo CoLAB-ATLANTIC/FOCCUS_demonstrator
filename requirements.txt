@@ -10,6 +10,8 @@ plotly==6.9.0
 xarray==2025.6.1
 PyYAML==6.0.3
 pymupdf==1.28.2
+anywidget==0.9.19
+jupyterlab_widgets
 s3fs
 
 # Optional: enables satellite/basemap tiles in a few plots (notebook falls
