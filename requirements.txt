@@ -20,7 +20,6 @@ contextily==1.7.1
 
 # Needed to run/open the notebook itself
 ipykernel
-jupyterlab
 nbformat
 nbconvert
 
