@@ -43,7 +43,8 @@ mamba install -y -c conda-forge \
   xarray==2025.6.1 \
   pyyaml==6.0.3 \
   contextily==1.7.1 \
-  pymupdf \
+  pymupdf==1.28.2 \
+  s3fs \
   ipykernel jupyterlab nbformat nbconvert
 
 ### === Register kernel for Jupyter ===
