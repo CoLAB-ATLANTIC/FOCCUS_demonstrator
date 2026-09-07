@@ -22,9 +22,9 @@ rm $MINIFORGE
 source $INSTALL_DIR/etc/profile.d/conda.sh
 
 ### === Create and activate environment ===
-echo "🧪 Creating conda environment 'demonstrator'..."
-conda create -y -n demonstrator python=3.10
-conda activate demonstrator
+echo "🧪 Creating conda environment 'foccus_storm_surge_demonstrator'..."
+conda create -y -n foccus_storm_surge_demonstrator python=3.10
+conda activate foccus_storm_surge_demonstrator
 
 # Install mamba
 conda install -y -c conda-forge mamba
@@ -47,7 +47,7 @@ mamba install -y -c conda-forge \
 
 ### === Register kernel for Jupyter ===
 echo "🔗 Registering Jupyter kernel..."
-python -m ipykernel install --user --name demonstrator --display-name "Python (demonstrator)"
+python -m ipykernel install --user --name foccus_storm_surge_demonstrator --display-name "Python (foccus_storm_surge_demonstrator)"
 
 ### === Clone repo and install local package ===
 echo "📥 Cloning FOCCUS_demonstrator repo..."
@@ -82,7 +82,7 @@ EOF
 echo "🧼 Clearing cell outputs..."
 jupyter nbconvert --clear-output --inplace "$NOTEBOOK"
 
-echo "✅ Setup complete. You can now open $REPO_DIR/$NOTEBOOK and it will use the 'demonstrator' kernel by default."
+echo "✅ Setup complete. You can now open $REPO_DIR/$NOTEBOOK and it will use the 'foccus_storm_surge_demonstrator' kernel by default."
 
 ### === Download large local data (gitignored: tier1, tier2, AML_domain) ===
 # TODO: data/tier1, data/tier2, and data/AML_domain are not tracked in the
