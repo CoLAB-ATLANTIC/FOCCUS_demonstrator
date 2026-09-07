@@ -43,7 +43,7 @@ mamba install -y -c conda-forge \
   xarray==2025.6.1 \
   pyyaml==6.0.3 \
   contextily==1.7.1 \
-  pymupdf==1.28.2 \
+  pymupdf=1.28\
   s3fs \
   ipykernel jupyterlab nbformat nbconvert
 
@@ -54,14 +54,17 @@ python -m ipykernel install --user --name foccus_storm_surge_demonstrator --disp
 ### === Clone repo and install local package ===
 echo "📥 Cloning FOCCUS_demonstrator repo..."
 REPO_DIR=FOCCUS_demonstrator
-TAG=v0.1.0
-git clone --branch "$TAG" --single-branch https://github.com/CoLAB-ATLANTIC/FOCCUS_demonstrator.git "$REPO_DIR"
+BRANCH_NAME=main
+git clone --branch "$BRANCH_NAME" --single-branch https://github.com/CoLAB-ATLANTIC/FOCCUS_demonstrator.git "$REPO_DIR"
 cd "$REPO_DIR"
+
+mv notebooks/final/FOCCUS_D8_1_Demonstrator.ipynb notebooks/main.ipynb
+rm -rf notebooks/final
 
 echo "📦 Installing local 'demonstrator' package (editable)..."
 pip install -e .
 
-NOTEBOOK=notebooks/final/FOCCUS_D8_1_Demonstrator.ipynb
+NOTEBOOK=notebooks/main.ipynb
 
 ### === Embed kernel metadata ===
 echo "⚙️ Embedding kernel metadata into notebook..."

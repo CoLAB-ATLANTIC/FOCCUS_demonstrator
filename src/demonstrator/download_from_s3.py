@@ -3,7 +3,6 @@ from os.path import join
 import s3fs
 
 def download_files_from_s3(
-    files_to_download,
     s3_subfolder,
     local_output_dir
 ):
@@ -11,8 +10,7 @@ def download_files_from_s3(
     Download files from S3 using EDITO datalab Onyxia environment.
 
     Parameters:
-    - files_to_download: list of filenames (e.g. ['2015_2020_TN_rel_all.nc', '2015_2020_TP_rel_all.nc'])
-    - s3_subfolder: folder name on S3 (e.g. 'Deltares')
+    - s3_subfolder: folder name on S3 (e.g. '+ATLANTIC')
     - local_output_dir: full local directory path where files should be saved
     """
     # Onyxia S3 credentials and bucket setup
@@ -26,11 +24,18 @@ def download_files_from_s3(
     os.makedirs(local_output_dir, exist_ok=True)
 
     # Download each file
-    for nc_file in files_to_download:
-        s3_path = f"{bucket_name}/{s3_subfolder}/{nc_file}"
-        local_path = join(local_output_dir, nc_file)
-        try:
-            fs.download(s3_path, local_path)
-            print(f"✅ Downloaded: {s3_path} → {local_path}")
-        except Exception as e:
-            print(f"❌ Failed to download {s3_path}: {e}")
+    s3_path = f"{bucket_name}/{s3_subfolder}/"
+    fs.get(
+        s3_path,
+        local_output_dir,
+        recursive=True
+    )   
+
+    # for nc_file in files_to_download:
+    #     s3_path = f"{bucket_name}/{s3_subfolder}/{nc_file}"
+    #     local_path = join(local_output_dir, nc_file)
+    #     try:
+    #         fs.download(s3_path, local_path)
+    #         print(f"✅ Downloaded: {s3_path} → {local_path}")
+    #     except Exception as e:
+    #         print(f"❌ Failed to download {s3_path}: {e}")
