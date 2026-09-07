@@ -1,3 +1,5 @@
+import math
+
 import ipywidgets as widgets
 import numpy as np
 import xarray as xr
@@ -80,15 +82,19 @@ def _compute_flooded_area_km2(water_depths, dx, dy):
     return flooded_cell_count * dx * dy / 1e6
 
 
-def _compute_depth_vmax(water_depths, minimum_water_depth_m):
-    """99.5th-percentile water depth, used as the animation colour-scale ceiling."""
+def _compute_depth_vmax(water_depths, minimum_water_depth_m, round_step=0.5):
+    """99.5th-percentile water depth, used as the animation colour-scale ceiling.
+
+    Rounded up to the nearest multiple of ``round_step`` for a clean colorbar.
+    """
     finite_depths = water_depths[np.isfinite(water_depths)]
     depth_vmax = (
         float(np.nanpercentile(finite_depths, 99.5))
         if finite_depths.size
         else minimum_water_depth_m + 0.20
     )
-    return max(depth_vmax, minimum_water_depth_m + 0.05)
+    depth_vmax = max(depth_vmax, minimum_water_depth_m + 0.05)
+    return math.ceil(depth_vmax / round_step) * round_step
 
 
 # ------------------------------------------------------------
@@ -249,7 +255,7 @@ def _plot_flood_map(map_axis, surface, x, y, bed, shoreline_x, shoreline_y):
         except Exception:
             pass
 
-    levels = np.linspace(surface["minimum_water_depth_m"], surface["vmax_m"], 15)
+    levels = [0.05]+list(np.arange(1,12.5,0.5))
     cmap = plt.get_cmap("RdYlBu").copy()
     cmap.set_bad(alpha=0.0)
     norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
@@ -295,7 +301,8 @@ def _plot_flood_map(map_axis, surface, x, y, bed, shoreline_x, shoreline_y):
     map_axis.ticklabel_format(style="plain", useOffset=False)
     map_axis.set_aspect("equal")
 
-    return {"depth_image": depth_image, "map_title": map_title, "current_runup_position":current_runup_position}
+    return {"depth_image": depth_image, "map_title": map_title,
+             "current_runup_position":current_runup_position}
 
 
 def _plot_runup_series(series_axis, times_full, runup_full, times_98th, runup_98th):
@@ -340,7 +347,6 @@ def _make_frame_updater(surface, times_s, runup_15m_s, map_artists, series_artis
     def update(frame_number):
         depth_frame = _mask_dry_cells(surface["water_depths_m"][frame_number], minimum_water_depth_m)
         map_artists["depth_image"].set_array(depth_frame.ravel())
-
 
         pointtime_index = surface["aligned_indices"][frame_number]
 
