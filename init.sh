@@ -43,6 +43,7 @@ mamba install -y -c conda-forge \
   xarray==2025.6.1 \
   pyyaml==6.0.3 \
   contextily==1.7.1 \
+  pymupdf \
   ipykernel jupyterlab nbformat nbconvert
 
 ### === Register kernel for Jupyter ===
@@ -94,4 +95,4 @@ echo "✅ Setup complete. You can now open $REPO_DIR/$NOTEBOOK and it will use t
 mkdir -p data/tier1 data/tier2 data/AML_domain
 echo "⚠️  Skipping tier1/tier2/AML_domain download — source not configured yet (see TODO above)."
 
-cd ..
+rm init.sh
