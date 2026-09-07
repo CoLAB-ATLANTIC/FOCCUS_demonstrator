@@ -54,12 +54,10 @@ BRANCH_NAME=main
 git clone --branch "$BRANCH_NAME" --single-branch https://github.com/CoLAB-ATLANTIC/FOCCUS_demonstrator.git "$REPO_DIR"
 cd "$REPO_DIR"
 
+echo "📦 Installing local 'demonstrator' package (editable) along with other dependencies"
 python -m pip install -r requirements.txt
 
 mv notebooks/FOCCUS_D8_1_Demonstrator.ipynb notebooks/main.ipynb
-
-echo "📦 Installing local 'demonstrator' package (editable)..."
-pip install -e .
 
 ### === Register kernel for Jupyter ===
 echo "🔗 Registering Jupyter kernel..."
@@ -76,8 +74,8 @@ nb_path = "$NOTEBOOK"
 nb = nbformat.read(open(nb_path), as_version=nbformat.NO_CONVERT)
 
 nb["metadata"]["kernelspec"] = {
-    "name": "demonstrator",
-    "display_name": "Python (demonstrator)",
+    "name": "foccus_storm_surge_demonstrator",
+    "display_name": "Python (foccus_storm_surge_demonstrator)",
     "language": "python"
 }
 
@@ -88,6 +86,4 @@ EOF
 echo "🧼 Clearing cell outputs..."
 jupyter nbconvert --clear-output --inplace "$NOTEBOOK"
 
-echo "✅ Setup complete. You can now open $REPO_DIR/$NOTEBOOK and it will use the 'foccus_storm_surge_demonstrator' kernel by default."
-
-rm init.sh
+echo "Setup complete. You can now open $REPO_DIR/$NOTEBOOK and it will use the 'foccus_storm_surge_demonstrator' kernel by default."
