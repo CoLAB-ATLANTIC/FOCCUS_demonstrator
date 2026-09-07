@@ -26,8 +26,6 @@ echo "🧪 Creating conda environment 'foccus_storm_surge_demonstrator'..."
 conda create -y -n foccus_storm_surge_demonstrator python=3.10.9
 conda activate foccus_storm_surge_demonstrator
 
-
-conda install -y -c conda-forge
 # Install mamba
 # conda install -y -c conda-forge mamba
 
@@ -49,10 +47,6 @@ conda install -y -c conda-forge
 #   s3fs \
 #   ipykernel jupyterlab nbformat nbconvert
 
-### === Register kernel for Jupyter ===
-echo "🔗 Registering Jupyter kernel..."
-python -m ipykernel install --user --name foccus_storm_surge_demonstrator --display-name "Python (foccus_storm_surge_demonstrator)"
-
 ### === Clone repo and install local package ===
 echo "📥 Cloning FOCCUS_demonstrator repo..."
 REPO_DIR=FOCCUS_demonstrator
@@ -66,6 +60,10 @@ mv notebooks/FOCCUS_D8_1_Demonstrator.ipynb notebooks/main.ipynb
 
 echo "📦 Installing local 'demonstrator' package (editable)..."
 pip install -e .
+
+### === Register kernel for Jupyter ===
+echo "🔗 Registering Jupyter kernel..."
+python -m ipykernel install --user --name foccus_storm_surge_demonstrator --display-name "Python (foccus_storm_surge_demonstrator)"
 
 NOTEBOOK=notebooks/main.ipynb
 
