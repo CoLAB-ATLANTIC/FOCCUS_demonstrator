@@ -87,3 +87,5 @@ echo "🧼 Clearing cell outputs..."
 jupyter nbconvert --clear-output --inplace "$NOTEBOOK"
 
 echo "Setup complete. You can now open $REPO_DIR/$NOTEBOOK and it will use the 'foccus_storm_surge_demonstrator' kernel by default."
+
+jupyter lab --notebook-dir=$REPO_DIR
