@@ -9,9 +9,9 @@ ipywidgets==8.1.9
 plotly==5.15
 xarray==2025.6.1
 PyYAML==6.0.3
-pymupdf==1.28.2
 anywidget==0.9.23
 s3fs
+pymupdf
 
 # Optional: enables satellite/basemap tiles in a few plots (notebook falls
 # back gracefully with a warning if this is not installed)
