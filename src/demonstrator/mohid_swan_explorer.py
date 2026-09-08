@@ -373,7 +373,7 @@ def build_mohid_swan_explorer(mohid,swan, map_width=700,series_width=700,figure_
         min=0,
         max=number_of_times - 1,
         step=1,
-        interval=400,
+        interval=800,
         description="Play",
         disabled=False)
 
