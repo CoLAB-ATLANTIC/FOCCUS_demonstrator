@@ -24,7 +24,7 @@ except ImportError:
 
 XBEACH_CRS = "EPSG:32629"
 MINIMUM_WATER_DEPTH_M = 0.05
-MAXIMUM_ANIMATION_FRAMES = 92
+MAXIMUM_ANIMATION_FRAMES = 92 #92
 
 
 # ------------------------------------------------------------
@@ -268,7 +268,7 @@ def _plot_flood_map(map_axis, surface, x, y, bed, shoreline_x, shoreline_y):
     )
 
     if np.isfinite(bed).any() and np.nanmin(bed) <= 0 and np.nanmax(bed) >= 0:
-        map_axis.contour(x, y, bed, levels=[0], colors="black", linewidths=0.9, zorder=3)
+        map_axis.contour(x, y, bed, levels=[2], colors="black", linewidths=0.9, zorder=3)
 
     # Zero-metre shoreline
     #map_axis.plot(shoreline_x, shoreline_y, color="black", linewidth=0.8, alpha=0.8, zorder=4)
@@ -305,7 +305,8 @@ def _plot_flood_map(map_axis, surface, x, y, bed, shoreline_x, shoreline_y):
              "current_runup_position":current_runup_position}
 
 
-def _plot_runup_series(series_axis, times_full, runup_full, times_98th, runup_98th):
+
+def _plot_runup_series(series_axis, times_full, runup_full, times_98th, runup_98th, threshold_runup):
     """Draw the runup time series and the initial time cursor.
 
     Returns the artists that need to be mutated per animation frame:
@@ -313,10 +314,11 @@ def _plot_runup_series(series_axis, times_full, runup_full, times_98th, runup_98
     """
 
     series_axis.plot(times_full, runup_full, color="#cac4cb", linewidth=1.8, label="Runup")
-    series_axis.plot(times_98th, runup_98th[:-1], color="#e27406", linewidth=1.8, label="R2")
+    series_axis.plot(times_98th, runup_98th[:-1], color="#e27406", linewidth=1.8, label="R2%")
+    series_axis.axhline(threshold_runup, color="#a11a1a", linewidth=1.5, linestyle="--", label="Structure crest")
 
     current_time_line = series_axis.axvline(
-        times_98th[0], color="#d32f2f", linewidth=1.5, linestyle="--", label="Current time"
+        times_98th[0], color="#151515", linewidth=1.5, linestyle="--", label="Current time"
     )
 
     current_runup_point = series_axis.scatter(
@@ -331,7 +333,8 @@ def _plot_runup_series(series_axis, times_full, runup_full, times_98th, runup_98
     series_axis.set_xlabel("Model time [s]")
     series_axis.set_ylabel("Runup [m]")
     series_axis.grid(alpha=0.25)
-    series_axis.legend(loc="best")
+    series_axis.legend(loc='upper center', bbox_to_anchor=(0.5, -0.25),
+          fancybox=True, ncol=4)
 
     return {"current_time_line": current_time_line, "current_runup_point": current_runup_point}
 
@@ -419,15 +422,18 @@ def make_xbeach_animation(surface, interval_ms=250):
         fig = plt.figure(figsize=(12, 7))
         map_axis = fig.add_axes([-0.08, 0.1, 0.7, 0.8])    
         series_axis = fig.add_axes([0.5, 0.35, 0.4, 0.3])
+        threshold_runup = 6.5
     elif surface['site'] == 'Oeiras':
         fig = plt.figure(figsize=(12, 6))
         map_axis = fig.add_axes([0.08, 0.1, 0.45, 0.8])
         series_axis = fig.add_axes([0.57, 0.35, 0.4, 0.3])
+        threshold_runup = 4.2
     else:
         pass
 
     map_artists = _plot_flood_map(map_axis, surface, x, y, bed,3,3)
-    series_artists = _plot_runup_series(series_axis, times_1s, runup_1s, times_15m_s, runup_98th_15m_s)
+    series_artists = _plot_runup_series(series_axis, times_1s, runup_1s, times_15m_s,
+                                         runup_98th_15m_s, threshold_runup)
 
     update = _make_frame_updater(surface, times_15m_s, runup_98th_15m_s, map_artists, series_artists)
     update(0)
