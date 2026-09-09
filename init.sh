@@ -26,27 +26,6 @@ echo "🧪 Creating conda environment 'foccus_storm_surge_demonstrator'..."
 conda create -y -n foccus_storm_surge_demonstrator python=3.10.9
 conda activate foccus_storm_surge_demonstrator
 
-# Install mamba
-# conda install -y -c conda-forge mamba
-
-# ### === Install exact packages ===
-# echo "📦 Installing required packages..."
-# mamba install -y -c conda-forge \
-#   folium==0.20.0 \
-#   matplotlib==3.10.9 \
-#   numpy==2.2.6 \
-#   pandas==2.3.3 \
-#   netcdf4==1.7.4 \
-#   pyproj==3.7.1 \
-#   ipywidgets==8.1.8 \
-#   plotly==6.9.0 \
-#   xarray==2025.6.1 \
-#   pyyaml==6.0.3 \
-#   contextily==1.7.1 \
-#   pymupdf \
-#   s3fs \
-#   ipykernel jupyterlab nbformat nbconvert
-
 ### === Clone repo and install local package ===
 echo "📥 Cloning FOCCUS_demonstrator repo..."
 REPO_DIR=FOCCUS_demonstrator
@@ -87,5 +66,3 @@ echo "🧼 Clearing cell outputs..."
 jupyter nbconvert --clear-output --inplace "$NOTEBOOK"
 
 echo "Setup complete. You can now open $REPO_DIR/$NOTEBOOK and it will use the 'foccus_storm_surge_demonstrator' kernel by default."
-
-cd notebooks
